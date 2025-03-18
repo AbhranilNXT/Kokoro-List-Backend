@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tech.abhranilnxt.kokorolistbackend.dao.UserAnimeMetricsDAO;
 import tech.abhranilnxt.kokorolistbackend.dao.UserDAO;
 import tech.abhranilnxt.kokorolistbackend.dao.WatchlistDAO;
 import tech.abhranilnxt.kokorolistbackend.entity.*;
@@ -22,12 +23,14 @@ public class WatchlistServiceImpl implements WatchlistService {
 
     private final WatchlistDAO watchlistDAO;
     private final UserDAO userDAO;
+    private final UserAnimeMetricsDAO userAnimeMetricsDAO;
     private final FirebaseAuth firebaseAuth;
 
     @Autowired
-    public WatchlistServiceImpl(WatchlistDAO watchlistDAO, UserDAO userDAO, FirebaseAuth firebaseAuth) {
+    public WatchlistServiceImpl(WatchlistDAO watchlistDAO, UserDAO userDAO, UserAnimeMetricsDAO userAnimeMetricsDAO, FirebaseAuth firebaseAuth) {
         this.watchlistDAO = watchlistDAO;
         this.userDAO = userDAO;
+        this.userAnimeMetricsDAO = userAnimeMetricsDAO;
         this.firebaseAuth = firebaseAuth;
     }
 
@@ -122,6 +125,50 @@ public class WatchlistServiceImpl implements WatchlistService {
                 "message", watchlistData
         );
     }
+
+    @Override
+    @Transactional
+    public Map<String, String> updateWatchlistMetricsById(String watchlistId, UpdateUserAnimeMetricsRequest updateRequest, String firebaseToken) throws FirebaseAuthException {
+        // Decode and verify the Firebase token
+        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(firebaseToken);
+        String userId = decodedToken.getUid();
+
+        // Fetch watchlist entry by ID
+        Watchlist watchlist = watchlistDAO.getWatchlistById(watchlistId)
+                .orElseThrow(() -> new EntityNotFoundException("Watchlist entry not found with ID: " + watchlistId));
+
+        // Ensure the watchlist belongs to the authenticated user
+        if (!watchlist.getUser().getUserId().equals(userId)) {
+            throw new SecurityException("Access denied: Unauthorized user for this watchlist entry");
+        }
+
+        // Fetch UserAnimeMetrics
+        UserAnimeMetrics metrics = userAnimeMetricsDAO.getUserAnimeMetrics(watchlist)
+                .orElseThrow(() -> new EntityNotFoundException("UserAnimeMetrics not found for this watchlist entry"));
+
+        // Update only non-null fields in the request
+        if (updateRequest.getPersonalRating() != null) {
+            metrics.setPersonalRating(updateRequest.getPersonalRating());
+        }
+        if (updateRequest.getStartedWatching() != null) {
+            metrics.setStartedWatching(updateRequest.getStartedWatching());
+        }
+        if (updateRequest.getFinishedWatching() != null) {
+            metrics.setFinishedWatching(updateRequest.getFinishedWatching());
+        }
+        if (updateRequest.getNotes() != null) {
+            metrics.setNotes(updateRequest.getNotes());
+        }
+
+        // Save the updated metrics
+        userAnimeMetricsDAO.saveOrUpdateUserAnimeMetrics(metrics);
+
+        return Map.of(
+                "status", "success",
+                "message", "User anime metrics updated successfully."
+        );
+    }
+
 }
 
 

@@ -33,4 +33,14 @@ public class UserAnimeMetricsDAOImpl implements UserAnimeMetricsDAO {
     public void saveUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics) {
         em.persist(userAnimeMetrics);
     }
+
+    @Override
+    public void saveOrUpdateUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics) {
+        if (userAnimeMetrics.getId() == null) {
+            em.persist(userAnimeMetrics);
+        } else {
+            em.merge(userAnimeMetrics);
+        }
+    }
+
 }

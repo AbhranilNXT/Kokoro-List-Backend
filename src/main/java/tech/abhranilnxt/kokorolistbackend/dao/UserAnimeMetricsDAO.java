@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface UserAnimeMetricsDAO {
     Optional<UserAnimeMetrics> getUserAnimeMetrics(Watchlist watchlist);
     void saveUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics);
+    void saveOrUpdateUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics);
 }
