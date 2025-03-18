@@ -8,6 +8,7 @@ import tech.abhranilnxt.kokorolistbackend.entity.Anime;
 import tech.abhranilnxt.kokorolistbackend.entity.User;
 import tech.abhranilnxt.kokorolistbackend.entity.Watchlist;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -34,5 +35,15 @@ public class WatchlistDAOImpl implements WatchlistDAO {
     @Override
     public Watchlist saveWatchlistEntry(Watchlist watchlistEntry) {
         return em.merge(watchlistEntry);
+    }
+
+    @Override
+    public List<Watchlist> getWatchlistItemsByUser(User user) {
+        TypedQuery<Watchlist> query = em.createQuery(
+                "SELECT w FROM Watchlist w WHERE w.user = :user",
+                Watchlist.class
+        );
+        query.setParameter("user", user);
+        return query.getResultList();
     }
 }
