@@ -80,6 +80,48 @@ public class WatchlistServiceImpl implements WatchlistService {
 
         return response;
     }
+
+    @Override
+    public Map<String, Object> getWatchlistItemById(String watchlistId, String firebaseToken) throws FirebaseAuthException {
+        // Decode and verify the Firebase token
+        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(firebaseToken);
+        String userId = decodedToken.getUid();
+
+        // Fetch watchlist entry by ID
+        Watchlist watchlist = watchlistDAO.getWatchlistById(watchlistId)
+                .orElseThrow(() -> new EntityNotFoundException("Watchlist entry not found with ID: " + watchlistId));
+
+        // Ensure the watchlist belongs to the authenticated user
+        if (!watchlist.getUser().getUserId().equals(userId)) {
+            throw new SecurityException("Access denied: Unauthorized user for this watchlist entry");
+        }
+
+        // Fetch user anime metrics
+        UserAnimeMetrics metrics = watchlist.getUserMetrics();
+
+        // Prepare response data with all anime details and user metrics
+        Map<String, Object> watchlistData = new HashMap<>();
+        watchlistData.put("watchlistId", watchlist.getWatchlistId());
+        watchlistData.put("title", watchlist.getAnime().getTitle());
+        watchlistData.put("imageUrl", watchlist.getAnime().getImageUrl());
+        watchlistData.put("studio", watchlist.getAnime().getStudio());
+        watchlistData.put("year", watchlist.getAnime().getYear());
+        watchlistData.put("genres", watchlist.getAnime().getGenres());
+        watchlistData.put("episodes", watchlist.getAnime().getEpisodes());
+        watchlistData.put("mal_score", watchlist.getAnime().getMalScore());
+        watchlistData.put("status", watchlist.getAnime().getStatus());
+
+        // Include UserAnimeMetrics details
+        watchlistData.put("personal_rating", metrics != null ? metrics.getPersonalRating() : 0);
+        watchlistData.put("started_watching", metrics != null ? metrics.getStartedWatching() : null);
+        watchlistData.put("finished_watching", metrics != null ? metrics.getFinishedWatching() : null);
+        watchlistData.put("notes", metrics != null ? metrics.getNotes() : "");
+
+        return Map.of(
+                "status", "success",
+                "message", watchlistData
+        );
+    }
 }
 
 

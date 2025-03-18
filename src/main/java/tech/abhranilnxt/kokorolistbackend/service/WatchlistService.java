@@ -6,5 +6,6 @@ import java.util.Map;
 
 public interface WatchlistService {
     Map<String, Object> getWatchlistItems(String firebaseToken) throws FirebaseAuthException;
+    Map<String, Object> getWatchlistItemById(String firebaseToken, String watchlistId) throws FirebaseAuthException;
 }
 

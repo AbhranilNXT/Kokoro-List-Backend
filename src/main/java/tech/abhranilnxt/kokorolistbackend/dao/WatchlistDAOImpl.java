@@ -46,4 +46,9 @@ public class WatchlistDAOImpl implements WatchlistDAO {
         query.setParameter("user", user);
         return query.getResultList();
     }
+
+    @Override
+    public Optional<Watchlist> getWatchlistById(String watchlistId) {
+        return Optional.ofNullable(em.find(Watchlist.class, watchlistId));
+    }
 }
