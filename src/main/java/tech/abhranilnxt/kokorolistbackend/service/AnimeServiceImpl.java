@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -106,5 +107,55 @@ public class AnimeServiceImpl implements AnimeService {
 
         return response;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getUserStats(String firebaseToken) throws FirebaseAuthException {
+        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(firebaseToken);
+        String userId = decodedToken.getUid();
+
+        // Fetch user
+        User user = userDAO.getUserById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        // Fetch all UserAnimeMetrics for the user
+        List<UserAnimeMetrics> userAnimeMetricsList = userAnimeMetricsDAO.getUserAnimeMetricsByUser(user);
+
+        // Filter stats
+        long currentlyWatchingCount = userAnimeMetricsList.stream()
+                .filter(uam -> uam.getStartedWatching() != null && uam.getFinishedWatching() == null)
+                .count();
+
+        long finishedWatchingCount = userAnimeMetricsList.stream()
+                .filter(uam -> uam.getStartedWatching() != null && uam.getFinishedWatching() != null)
+                .count();
+
+        // Create list of finished anime
+        List<Map<String, Object>> finishedAnimeList = userAnimeMetricsList.stream()
+                .filter(uam -> uam.getStartedWatching() != null && uam.getFinishedWatching() != null)
+                .map(uam -> {
+                    Map<String, Object> animeDetails = new HashMap<>();
+                    animeDetails.put("watchlistId", uam.getWatchlist().getWatchlistId());
+                    animeDetails.put("title", uam.getWatchlist().getAnime().getTitle());
+                    animeDetails.put("imageUrl", uam.getWatchlist().getAnime().getImageUrl());
+                    animeDetails.put("studio", uam.getWatchlist().getAnime().getStudio());
+                    animeDetails.put("malScore", uam.getWatchlist().getAnime().getMalScore());
+                    animeDetails.put("genres", uam.getWatchlist().getAnime().getGenres());
+                    animeDetails.put("startedWatching", uam.getStartedWatching());
+                    animeDetails.put("finishedWatching", uam.getFinishedWatching());
+                    return animeDetails;
+                })
+                .collect(Collectors.toList());
+
+        // Prepare response
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("currentlyWatchingCount", currentlyWatchingCount);
+        response.put("finishedWatchingCount", finishedWatchingCount);
+        response.put("finishedAnimeList", finishedAnimeList);
+
+        return response;
+    }
+
 }
 

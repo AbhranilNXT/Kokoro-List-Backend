@@ -11,4 +11,5 @@ public interface AnimeService {
     List<Anime> getAllAnime();
     Anime getAnimeById(Long malId);
     Map<String, String> addAnime(AnimeRequest animeRequest, String firebaseToken) throws FirebaseAuthException;
+    Map<String, Object> getUserStats(String firebaseToken) throws FirebaseAuthException;
 }

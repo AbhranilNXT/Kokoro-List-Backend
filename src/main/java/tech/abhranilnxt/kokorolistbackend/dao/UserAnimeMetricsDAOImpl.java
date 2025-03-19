@@ -4,9 +4,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import tech.abhranilnxt.kokorolistbackend.entity.User;
 import tech.abhranilnxt.kokorolistbackend.entity.UserAnimeMetrics;
 import tech.abhranilnxt.kokorolistbackend.entity.Watchlist;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -41,6 +43,16 @@ public class UserAnimeMetricsDAOImpl implements UserAnimeMetricsDAO {
         } else {
             em.merge(userAnimeMetrics);
         }
+    }
+
+    @Override
+    public List<UserAnimeMetrics> getUserAnimeMetricsByUser(User user) {
+        TypedQuery<UserAnimeMetrics> query = em.createQuery(
+                "SELECT w FROM UserAnimeMetrics w WHERE w.watchlist.user = :user",
+                UserAnimeMetrics.class
+        );
+        query.setParameter("user", user);
+        return query.getResultList();
     }
 
 }

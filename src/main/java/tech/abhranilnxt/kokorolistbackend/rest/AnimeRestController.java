@@ -60,5 +60,34 @@ public class AnimeRestController {
             ));
         }
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getUserStats(
+            @RequestHeader("Authorization") String bearerToken) {
+        try {
+            if (!bearerToken.startsWith("Bearer ")) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "status", "error",
+                        "message", "Invalid token format"
+                ));
+            }
+
+            String firebaseToken = bearerToken.substring(7);
+            Map<String, Object> response = animeService.getUserStats(firebaseToken);
+            return ResponseEntity.ok(response);
+
+        } catch (FirebaseAuthException e) {
+            return ResponseEntity.status(401).body(Map.of(
+                    "status", "error",
+                    "message", "Unauthorized: Invalid Firebase token"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "error",
+                    "message", "Internal Server Error: " + e.getMessage()
+            ));
+        }
+    }
+
 }
 
