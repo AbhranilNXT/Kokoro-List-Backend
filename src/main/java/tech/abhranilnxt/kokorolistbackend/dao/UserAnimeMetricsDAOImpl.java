@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import tech.abhranilnxt.kokorolistbackend.entity.User;
 import tech.abhranilnxt.kokorolistbackend.entity.UserAnimeMetrics;
 import tech.abhranilnxt.kokorolistbackend.entity.Watchlist;
@@ -53,6 +54,12 @@ public class UserAnimeMetricsDAOImpl implements UserAnimeMetricsDAO {
         );
         query.setParameter("user", user);
         return query.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserAnimeMetricsByWatchlist(Watchlist watchlist) {
+        getUserAnimeMetrics(watchlist).ifPresent(em::remove);
     }
 
 }

@@ -46,14 +46,14 @@ public class WatchlistServiceImpl implements WatchlistService {
         // Fetch all watchlist entries of the user
         List<Watchlist> watchlistItems = watchlistDAO.getWatchlistItemsByUser(user);
 
-        List<WatchlistItemDTO> planToWatch = new ArrayList<>();
-        List<WatchlistItemDTO> currentlyWatching = new ArrayList<>();
+        List<GetWatchlistBody> planToWatch = new ArrayList<>();
+        List<GetWatchlistBody> currentlyWatching = new ArrayList<>();
 
         for (Watchlist watchlist : watchlistItems) {
             UserAnimeMetrics metrics = watchlist.getUserMetrics();
             Anime anime = watchlist.getAnime();
 
-            WatchlistItemDTO dto = new WatchlistItemDTO(
+            GetWatchlistBody dto = new GetWatchlistBody(
                     watchlist.getWatchlistId(),
                     anime.getTitle(),
                     anime.getImageUrl(),
@@ -73,7 +73,7 @@ public class WatchlistServiceImpl implements WatchlistService {
         }
 
         // Prepare the response
-        Map<String, List<WatchlistItemDTO>> message = new HashMap<>();
+        Map<String, List<GetWatchlistBody>> message = new HashMap<>();
         message.put("plan_to_watch", planToWatch);
         message.put("currently_watching", currentlyWatching);
 
@@ -128,7 +128,7 @@ public class WatchlistServiceImpl implements WatchlistService {
 
     @Override
     @Transactional
-    public Map<String, String> updateWatchlistMetricsById(String watchlistId, UpdateUserAnimeMetricsRequest updateRequest, String firebaseToken) throws FirebaseAuthException {
+    public Map<String, String> updateWatchlistMetricsById(String watchlistId, PatchUserAnimeMetricsBody updateRequest, String firebaseToken) throws FirebaseAuthException {
         // Decode and verify the Firebase token
         FirebaseToken decodedToken = firebaseAuth.verifyIdToken(firebaseToken);
         String userId = decodedToken.getUid();

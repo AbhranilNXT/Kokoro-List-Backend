@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.abhranilnxt.kokorolistbackend.entity.Anime;
-import tech.abhranilnxt.kokorolistbackend.entity.AnimeRequest;
+import tech.abhranilnxt.kokorolistbackend.entity.PostAnimeBody;
 import tech.abhranilnxt.kokorolistbackend.service.AnimeService;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class AnimeRestController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addAnime(
-            @RequestBody AnimeRequest animeRequest,
+            @RequestBody PostAnimeBody postAnimeBody,
             @RequestHeader("Authorization") String bearerToken) {
         try {
             if (!bearerToken.startsWith("Bearer ")) {
@@ -45,7 +45,7 @@ public class AnimeRestController {
             }
 
             String firebaseToken = bearerToken.substring(7);
-            Map<String, String> response = animeService.addAnime(animeRequest, firebaseToken);
+            Map<String, String> response = animeService.addAnime(postAnimeBody, firebaseToken);
             return ResponseEntity.ok(response);
 
         } catch (FirebaseAuthException e) {

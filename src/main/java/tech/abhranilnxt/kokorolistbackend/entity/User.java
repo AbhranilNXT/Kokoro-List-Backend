@@ -22,6 +22,9 @@ public class User {
     @Column(name = "bio")
     private String bio;
 
+    @Column(name = "is_admin", nullable = false)
+    private boolean isAdmin = false;
+
     public User() {
     }
 
@@ -30,6 +33,7 @@ public class User {
         this.displayName = displayName;
         this.avatarUrl = avatarUrl;
         this.bio = bio;
+        this.isAdmin = false;
     }
 
     public String getUserId() {
@@ -64,6 +68,14 @@ public class User {
         this.bio = bio;
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -71,6 +83,7 @@ public class User {
                 ", displayName='" + displayName + '\'' +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", bio='" + bio + '\'' +
+                ", isAdmin=" + isAdmin +
                 '}';
     }
 }

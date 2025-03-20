@@ -8,4 +8,5 @@ public interface UserDAO {
     Optional<User> getUserById(String userId);
 
     void saveOrUpdateUser(User user);
+    void deleteUser(User user);
 }

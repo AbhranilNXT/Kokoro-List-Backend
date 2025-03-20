@@ -2,8 +2,7 @@ package tech.abhranilnxt.kokorolistbackend.entity;
 
 import java.time.LocalDateTime;
 
-public class WatchlistItemDTO {
-
+public class GetWatchlistBody {
     private String watchlistId;
     private String title;
     private String imageUrl;
@@ -12,7 +11,7 @@ public class WatchlistItemDTO {
     private LocalDateTime startedWatching;
     private LocalDateTime finishedWatching;
 
-    public WatchlistItemDTO(String watchlistId, String title, String imageUrl, String studio,
+    public GetWatchlistBody(String watchlistId, String title, String imageUrl, String studio,
                             Integer personalRating, LocalDateTime startedWatching, LocalDateTime finishedWatching) {
         this.watchlistId = watchlistId;
         this.title = title;

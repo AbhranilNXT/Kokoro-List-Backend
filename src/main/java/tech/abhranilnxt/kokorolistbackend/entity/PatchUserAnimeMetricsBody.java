@@ -2,7 +2,7 @@ package tech.abhranilnxt.kokorolistbackend.entity;
 
 import java.time.LocalDateTime;
 
-public class UpdateUserAnimeMetricsRequest {
+public class PatchUserAnimeMetricsBody {
     private Integer personalRating;
     private LocalDateTime startedWatching;
     private LocalDateTime finishedWatching;

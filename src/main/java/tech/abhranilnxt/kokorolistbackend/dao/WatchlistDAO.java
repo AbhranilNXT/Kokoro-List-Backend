@@ -12,5 +12,6 @@ public interface WatchlistDAO {
     Watchlist saveWatchlistEntry(Watchlist watchlistEntry);
     List<Watchlist> getWatchlistItemsByUser(User user);
     Optional<Watchlist> getWatchlistById(String watchlistId);
+    void deleteWatchlistEntry(Watchlist watchlist);
 }
 

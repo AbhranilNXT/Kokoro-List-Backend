@@ -1,6 +1,6 @@
 package tech.abhranilnxt.kokorolistbackend.entity;
 
-public class AnimeRequest {
+public class PostAnimeBody {
     private Long malId;
     private String title;
     private String imageUrl;

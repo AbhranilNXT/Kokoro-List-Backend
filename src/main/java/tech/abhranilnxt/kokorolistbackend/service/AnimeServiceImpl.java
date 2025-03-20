@@ -51,7 +51,7 @@ public class AnimeServiceImpl implements AnimeService {
 
     @Override
     @Transactional
-    public Map<String, String> addAnime(AnimeRequest animeRequest, String firebaseToken) throws FirebaseAuthException {
+    public Map<String, String> addAnime(PostAnimeBody postAnimeBody, String firebaseToken) throws FirebaseAuthException {
         FirebaseToken decodedToken = firebaseAuth.verifyIdToken(firebaseToken);
         String userId = decodedToken.getUid();
 
@@ -60,24 +60,24 @@ public class AnimeServiceImpl implements AnimeService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
         // Check if Anime exists, else create/update
-        Optional<Anime> existingAnime = animeDAO.getAnimeById(animeRequest.getMalId());
+        Optional<Anime> existingAnime = animeDAO.getAnimeById(postAnimeBody.getMalId());
         Anime anime = existingAnime.orElseGet(() -> new Anime(
-                animeRequest.getMalId(), animeRequest.getTitle(), animeRequest.getImageUrl(),
-                animeRequest.getSynopsis(), animeRequest.getStudio(), animeRequest.getYear(),
-                animeRequest.getGenres(), animeRequest.getEpisodes(), animeRequest.getMalScore(),
-                animeRequest.getStatus()
+                postAnimeBody.getMalId(), postAnimeBody.getTitle(), postAnimeBody.getImageUrl(),
+                postAnimeBody.getSynopsis(), postAnimeBody.getStudio(), postAnimeBody.getYear(),
+                postAnimeBody.getGenres(), postAnimeBody.getEpisodes(), postAnimeBody.getMalScore(),
+                postAnimeBody.getStatus()
         ));
 
         if (existingAnime.isPresent()) {
-            anime.setTitle(animeRequest.getTitle());
-            anime.setImageUrl(animeRequest.getImageUrl());
-            anime.setSynopsis(animeRequest.getSynopsis());
-            anime.setStudio(animeRequest.getStudio());
-            anime.setYear(animeRequest.getYear());
-            anime.setGenres(animeRequest.getGenres());
-            anime.setEpisodes(animeRequest.getEpisodes());
-            anime.setMalScore(animeRequest.getMalScore());
-            anime.setStatus(animeRequest.getStatus());
+            anime.setTitle(postAnimeBody.getTitle());
+            anime.setImageUrl(postAnimeBody.getImageUrl());
+            anime.setSynopsis(postAnimeBody.getSynopsis());
+            anime.setStudio(postAnimeBody.getStudio());
+            anime.setYear(postAnimeBody.getYear());
+            anime.setGenres(postAnimeBody.getGenres());
+            anime.setEpisodes(postAnimeBody.getEpisodes());
+            anime.setMalScore(postAnimeBody.getMalScore());
+            anime.setStatus(postAnimeBody.getStatus());
         }
 
         animeDAO.saveOrUpdateAnime(anime);

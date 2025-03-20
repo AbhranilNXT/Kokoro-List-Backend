@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.abhranilnxt.kokorolistbackend.entity.UpdateUserAnimeMetricsRequest;
+import tech.abhranilnxt.kokorolistbackend.entity.PatchUserAnimeMetricsBody;
 import tech.abhranilnxt.kokorolistbackend.service.WatchlistService;
 
 import java.util.Map;
@@ -96,7 +96,7 @@ public class WatchlistRestController {
     @PatchMapping("/item/{watchlistId}")
     public ResponseEntity<Map<String, String>> updateWatchlistMetricsById(
             @PathVariable String watchlistId,
-            @RequestBody UpdateUserAnimeMetricsRequest updateRequest,
+            @RequestBody PatchUserAnimeMetricsBody updateRequest,
             @RequestHeader("Authorization") String bearerToken) {
         try {
             // Validate and extract the token

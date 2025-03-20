@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import tech.abhranilnxt.kokorolistbackend.entity.Anime;
 import tech.abhranilnxt.kokorolistbackend.entity.User;
 import tech.abhranilnxt.kokorolistbackend.entity.Watchlist;
@@ -50,5 +51,11 @@ public class WatchlistDAOImpl implements WatchlistDAO {
     @Override
     public Optional<Watchlist> getWatchlistById(String watchlistId) {
         return Optional.ofNullable(em.find(Watchlist.class, watchlistId));
+    }
+
+    @Override
+    @Transactional
+    public void deleteWatchlistEntry(Watchlist watchlist) {
+        em.remove(em.contains(watchlist) ? watchlist : em.merge(watchlist));
     }
 }

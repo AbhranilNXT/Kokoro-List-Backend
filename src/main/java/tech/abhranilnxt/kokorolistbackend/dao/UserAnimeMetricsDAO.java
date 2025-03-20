@@ -12,4 +12,5 @@ public interface UserAnimeMetricsDAO {
     void saveUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics);
     void saveOrUpdateUserAnimeMetrics(UserAnimeMetrics userAnimeMetrics);
     List<UserAnimeMetrics> getUserAnimeMetricsByUser(User user);
+    void deleteUserAnimeMetricsByWatchlist(Watchlist watchlist);
 }
